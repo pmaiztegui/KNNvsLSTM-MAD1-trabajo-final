@@ -2,6 +2,7 @@
 # _Descripción_ : #
 
 El objetivo del trabajo es comparar un modelo clásico de aprendizaje como lo es K-Nearest Neighbors con uno de aprendizaje profundo, como Long Short Term Memory.
+
 Trabajaremos sobre el dataset provisto por el Canadian Institute of Cybersecurity, CICIDS-2017, que contiene información de tráfico en red normal y distintos tipos de ataques. 
 
 # _Motivación_: #
@@ -9,8 +10,11 @@ En un mundo donde cada vez dependemos más de la tecnología, la seguridad en re
 
 # _Datos_: #
 Como mencionamos, utilizaremos el dataset CICIDS-2017 que contiene tráfico en red, generado en 5 días y contiene tráfico normal y distintos tipos de ciberataques.
+
 Originalmente, éste contenía 2.830.743 de registros de flujos de red. Cada registro se describe mediante 78 características numéricas y una clasificación (Label) que detecta al tráfico como benigno o indica qué ataque es. 
+
 Algunas de las variables numéricas que podemos observar son: Flow Duration, Flow Bytes/s, Flow Packets/s, Destination Port, Flow IAT.
+
 Además, con el fin de simplificar la clasificación, elegimos agrupar la variable Label en siete clases: BENIGN, DoS, DDoS, PortScan, Other, Web Attack y Bot.
 
 # _Metodología:_ #
@@ -26,4 +30,13 @@ Además, con el fin de simplificar la clasificación, elegimos agrupar la variab
 
      - KNN: Utilizamos una muestra de 100.000 registros balanceada y estratificada para entrenar el modelo. Elegimos el mejor k mediante validación cruzada.
      - LSTM: Entrenamos una red neuronal recurrente con la misma muestra.
-9. Comparamos métricas de los modelos mediante: Accuracy, Precisón, Recall, F1 macro y ponderado. 
+9. Comparamos métricas de los modelos mediante: Accuracy, Precisón, Recall, F1 macro y ponderado.
+
+
+# _Principales Resultados:_ #
+Comparamos los resultados obtenidos por los que se reportan en _Deep Learning vs. Machine Learning for Intrusion Detection in Computer Networks: A Comparative Study_ (Ali et al., 2025).
+
+Observamos diferencias, que se pueden deber a las decisiones que fuimos tomando a lo largo del trabajo. 
+
+# _Cómo ejecutar:_ #
+
