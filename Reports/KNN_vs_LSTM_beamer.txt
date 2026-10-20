@@ -1,0 +1,319 @@
+\documentclass{beamer}
+
+\usetheme{Madrid}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage[normalem]{ulem}
+
+\title{Trabajo final: KNN vs. LSTM}
+\subtitle{Métodos para el Análisis de Datos I}
+\author{Pilar Maiztegui}
+\institute[UNS]{Universidad Nacional del Sur}
+\date{2026}
+
+\begin{document}
+
+\begin{frame}
+    \titlepage
+\end{frame}
+
+
+\begin{frame}{Presentación del problema.}
+
+    Como las tecnologías digitales se volvieron fundamentales en varios aspectos de nuestras vidas, nos resulta importante detectar ciberataques para proteger nuestra información.
+
+    Los métodos de aprendizaje automático nos ayudan a predecir estas intrusiones en red, detectando patrones difíciles de identificar.
+
+    \begin{block}{Objetivo}
+    Comparar KNN y LSTM para la detección y clasificación de
+    estas amenazas.
+    \end{block}
+\end{frame}
+
+\begin{frame}{Presentación del problema.}
+    Trabajamos con el artículo \textit{Deep Learning vs. Machine Learning for Intrusion Detection in Computer Networks: A Comparative Study}, Ali et. al (2025) que utiliza el dataset CICIDS-2017.
+    \begin{block}{¿Por qué comparar KNN y LSTM?}
+        KNN es un modelo clásico y LSTM un modelo de aprendizaje profundo. Nos interesa comparar:
+        \begin{itemize}
+            \item Métricas.
+            \item Como se comportan con este dataset.
+            \item Cuál es mejor para el contexto del problema. 
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Dataset.}
+    El CICIDS-2017 es un dataset creado por el Canadian Institute of Cybersecurity para la detección de intrusiones. Fue generado durante 5 días, capturando tráfico de red (normal y amenazas).
+
+    \begin{block}{Tipos de ataques:}
+        \begin{itemize}
+            \item Web Attack (Brute Force, XSS, Sql Injection)
+            \item DoS (Hulk, slowloris, Slowhttptest, GoldenEye)
+            \item DDoS
+            \item PortScan
+            \item FTP-Patator y SSH-Patator
+            \item Bot
+            \item Infiltration
+            \item Heartbleed
+        \end{itemize}
+    \end{block}
+\end{frame}
+
+\begin{frame}{Dataset.}
+    Durante el preprocesamiento de los datos, eliminamos duplicados, completamos datos faltantes y agrupamos tipos de ataques para simplificar la clasificación. 
+
+    A continuación se muestra la distribución de clases antes y después de aplicar SMOTE: 
+
+    \begin{center}
+        \begin{tabular}{|l|r|r|}
+            \hline
+            \textbf{Clase} & \textbf{Antes de SMOTE} & \textbf{Después de SMOTE} \\ \hline
+                BENIGN     & 1.676.045 & 1.676.045 \\
+                DoS        & 154.996   & 1.676.045 \\
+                DDoS       & 102.411   & 1.676.045 \\
+                PortScan   & 72.555    & 1.676.045 \\
+                Other      & 7.358     & 1.676.045 \\
+                Web Attack & 1.714     & 1.676.045 \\
+                Bot        & 1.559     & 1.676.045 \\
+            \hline
+        \end{tabular}
+    \end{center}
+
+\end{frame}
+
+\begin{frame}{KNN: K-Nearest Neighbors - Marco teórico}
+    \begin{itemize}
+        \item Idea general: KNN es un algoritmo de clasificación que asume que los puntos cercanos pertenecen a una misma clase. Si queremos clasificar un nuevo dato $x_0$, este algoritmo busca sus $k$ vecinos más cercanos y le asigna la clase mayoritaria de ellos.
+        \end{itemize}
+    \begin{figure}[h]
+    \centering
+    \includegraphics[width=0.8\linewidth]{knn_grafico.png}
+    \label{fig:knn_grafico}
+\end{figure}
+\end{frame}
+
+\begin{frame}{KNN: K-Nearest Neighbors - Marco teórico.}
+    \textbf{Cosas a tener en cuenta al trabajar con el modelo:}
+    \begin{itemize}
+        \item Por simplicidad, usamos la distancia Euclídea, aunque se podría optar el uso de otras, como la Manhattan o la Minkowski.
+        \item Se recomienda estandarizar cada variable para que tengan media 0 y varianza 1, lo que evita que las medidas de mayores escalas tengan mayor influencia sobre las distancias.
+        \item Elección del hiperparámetro: el valor de $k$ determina la cantidad de vecinos a considerar para clasificar. Se suele probar con números impares hasta el 15 o 17. \begin{itemize}
+            \item Si $k=1$ la frontera es irregular. Bajo sesgo pero alta varianza.
+            \item Si $k$ demasiado grande, la frontera es suave y el modelo ignora detalles locales, aumentando el sesgo. 
+        \end{itemize} 
+        
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{KNN: K-Nearest Neighbors - Marco teórico.}
+    \begin{columns}
+        \begin{column}{0.46\textwidth}
+        \setbeamercolor{block title}{bg=ForestGreen, fg= white}
+        \setbeamercolor{block body}{bg=ForestGreen!10, fg=black}
+            \begin{block}{Ventajas}
+                \begin{itemize}
+                    \item Simplicidad: fácil de entender e implementar. 
+                    \item Rápido entrenamiento.
+                    \item Depende de un solo hiperparámetro. 
+                \end{itemize}
+            \end{block}
+        \end{column}
+        \begin{column}{0.46\textwidth}
+        \setbeamercolor{block title}{bg=red, fg= white}
+        \setbeamercolor{block body}{bg=red!10, fg=black}
+            \begin{block}{Limitaciones}
+                \begin{itemize}
+                    \item Maldición de la dimensión: en espacios de alta dimensión, todos los puntos parecen estar a casi la misma distancia. Se recomienda eliminar variables redundantes.
+                    \item Lento para predecir: tiene que comparar todas las distancias.
+                \end{itemize}
+            \end{block}
+        \end{column}
+    \end{columns}
+    
+    
+\end{frame}
+
+\begin{frame}{KNN: K-Nearest Neighbors - Aplicación.}
+\begin{itemize}
+    \item Elección del k:
+Recordemos que teniamos 11 millones de filas. Elegimos tomar una muestra de 100.000 observaciones y hacer validación cruzada sobre ella para elegir el k.\\
+Probamos con valores impares de k entre 5 y 11, y nos quedamos con el que mejor F1 macro promedio nos devolvía. Esto nos dió:
+\end{itemize}
+\begin{center}
+        \begin{tabular}{|c|c|}
+            \hline
+            \textbf{k} & \textbf{F1 macro promedio} \\ \hline
+                5     & 0.9893 \\
+                7     & 0.9881 \\
+                9     & 0.9870 \\
+                11    & 0.9860 \\
+               
+            \hline
+        \end{tabular}
+    \end{center}
+Por lo tanto, elegimos $k=5$
+\end{frame}
+\begin{frame}{LSTM: Long Short Term Memory - Marco teórico.}
+    \begin{itemize}
+        \item LSTM es un tipo de red neuronal recurrente (RNN) con compuertas. Estas se basan en crear caminos en el tiempo conectando con pasos que pueden cambiar en cada caso. 
+        \item Tiene una célula de memoria con una recurrencia interna. Cada célula tiene la misma cantidad de entradas y salidas que la red, pero tiene más parámetros y un sistema de compuertas que controlan el flujo de información.
+        \item Cada célula tiene una puerta de entrada que controla el ingreso de nueva información y determina si es relevante para almacenar; una puerta de olvido que decide que información se puede descartar;y una puerta de salida que controla qué parte de la célula se usa para generar la salida en el paso actual.
+        \end{itemize}
+\end{frame}
+
+\begin{frame}{LSTM: Long Short Term Memory - Marco teórico.}
+    \begin{columns}
+        \begin{column}{0.46\textwidth}
+        \setbeamercolor{block title}{bg=ForestGreen, fg= white}
+        \setbeamercolor{block body}{bg=ForestGreen!10, fg=black}
+            \begin{block}{Ventajas}
+                \begin{itemize}
+                    \item Memoria a largo plazo. 
+                    \item Funciona muy bien para datos que dependen del tiempo.
+                    \item Rápida predicción.  
+                \end{itemize}
+            \end{block}
+        \end{column}
+        \begin{column}{0.46\textwidth}
+        \setbeamercolor{block title}{bg=red, fg= white}
+        \setbeamercolor{block body}{bg=red!10, fg=black}
+            \begin{block}{Limitaciones}
+                \begin{itemize}
+                    \item Entrenamiento lento. 
+                    \item Mayor uso de memoria.
+                    \item Mayor costo computacional debido a la estructura interna. 
+                \end{itemize}
+            \end{block}
+        \end{column}
+    \end{columns}
+\end{frame}
+
+\begin{frame}{LSTM: Long Short Term Memory - Aplicación.}
+    \begin{itemize}
+        \item Trabajamos con la misma muestra de 100.000 observaciones que usamos para KNN.
+        \item Primero, transformamos las etiquetas de texto a números para que la red las pueda interpretar:
+    \end{itemize}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.35\linewidth]{renombre.png}
+        
+        \label{fig:placeholder}
+    \end{figure}
+\end{frame}
+
+\begin{frame}{LSTM: Long Short Term Memory - Aplicación.}
+    \begin{itemize}
+        \item Separamos la muestra en 80.000 datos para entrenamiento y 20.000 para validación.
+        \item Tuvimos que reformar a X (features) porque necesitabamos datos tridimensionales. 
+        \item Tuvimos que elegir cuantas pasadas (épocas) por la red haciamos durante el entrenamiento. Esto es importante para no quedarse con un modelo que no haya aprendido lo suficiente o que sobreajuste demasiado. Lo hicimos mediante EarlyStopping, monitoreando el error sobre el error de validación, con un máximo de 30 épocas. Si el error no mejoraba durante dos épocas consecutivas del entrenamiento, éste se detenía y se recuperaban los pesos de la época con mejor validación. 
+    \end{itemize}
+\end{frame}
+
+\begin{frame}{LSTM: Long Short Term Memory - Aplicación.}
+    \begin{figure}
+        \centering
+        \includegraphics[width=0.70\linewidth]{SCRL_0001.jpeg}
+        \caption{EarlyStopping}
+        \label{fig:placeholder}
+    \end{figure}
+    \small
+    Así, decidimos que lo mejor era quedarnos con 16 épocas para el entrenamiento.
+\end{frame}
+
+\begin{frame}{Métricas.}
+
+        \textit{¿Qué significa cada métrica?}\\
+        Tenemos los verdaderos positivos (VP), los verdaderos negativos(VN), los falsos positivos (FP) y los falsos negativos (FN).
+        \begin{itemize}
+            \item \textit{Accuracy:} Mide la proporción de predicciones correctas sobre el total de predicciones. Es engañosa para clases desbalanceadas.
+            \item \textit{Precisión:} Nos dice qué proporción de las predicciones del modelo son correctas.
+            \item \textit{Recall:} Indica la proporción de los casos positivos reales que detecta el modelo.
+            \item \textit{F1-Score:} Relaciona la precisión y el recall. 
+            \begin{itemize}
+                \item \textit{F1 macro:} Calcula el F1 de cada clase y los promedia, lo que permite detectar si el modelo funciona mal en algunas clases.
+                \item \textit{F1 ponderado:} Calcula el F1 de cada clase pero promediamos dandole más peso a las clases más grandes.
+            \end{itemize}
+        \end{itemize}
+   
+    
+
+
+  
+\end{frame}
+
+\begin{frame}{Métricas.}
+            \begin{block}{Fórmulas}
+        \begin{itemize}
+            \item Accuracy= $\frac{VP+VN}{VP+VN+FP+FN}$  
+            \item Precisión= $\frac{VP}{VP+FP}$
+            \item Recall= $\frac{VP}{VP+FN}$
+            \item F1= $2\cdot\frac{\text{Precisión}\cdot\text{Recall}}{\text{Precisión+Recall}}$
+            \item $F1_\text{macro}=\frac{\sum_{i=1}^CF1_i}{C}$ donde C es la cantidad de clases.
+            \item $F1_\text{ponderado}=\frac{\sum_{i=1}^Cn_iF1_i}{\sum_{i=1}^C n_i}$, donde $n_i$ la cantidad de observaciones para la clase $C_i$
+        \end{itemize}
+        \end{block}
+\end{frame}
+
+\begin{frame}{Resultados.}
+Nos interesa comparar nuestros resultados luego de predecir con los hallados en \textit{Ali et. Al}:
+\begin{center}
+    \begin{tabular}{|l|c|c|c|c|}
+    \hline
+     \textbf{Métrica} & \textbf{KNN} & \textbf{KNN Ali} & \textbf{LSTM} & \textbf{LSTM Ali}\\ \hline
+     \textbf{Accuracy} & 96.41\% & 99.36\% & 86.76\% & 98\% \\
+     \textbf{F1 Macro} & 70.92\% & 97.62\% & 57.24\% & 84\%\\
+     \textbf{F1 Ponderado} & 97.12\% & 99\% & 89.75\% &98\%\\
+     \hline
+    \end{tabular}
+\end{center}
+Notamos que nuestras métricas son más bajas. ¿Qué pudo pasar? \\
+Nosotros elegimos entrenar con una muestra de 100.000 datos con clases balanceadas mediante SMOTE y luego predijimos sobre el conjunto original, lo cual puede explicar las diferencias en las métricas.\\
+En particular, las clases más pequeñas fueron las más difíciles de clasificar, lo que explica el F1 macro bajo. 
+\end{frame}
+
+\begin{frame}{¿Qué método gana en este caso?}
+    En nuestro experimento, al igual que en el paper de referencia, KNN obtiene mejores resultados según las métricas comparadas. Es por eso que KNN es la alternativa conveniente para este análisis. \\
+    LSTM funciona en particular muy bien para analizar patrones temporales. Sin embargo, las observaciones de CICIDS-2017 son  características ya calculadas del tráfico y no una verdadera secuencia temporal.
+\end{frame}
+
+\begin{frame}{¿Cuándo gana LSTM? - Ejemplo.}
+\begin{block}{Paper de referencia:}
+\href{https://www.e3s-conferences.org/articles/e3sconf/pdf/2025/05/e3sconf_icenis2024_03051.pdf}{\textcolor{blue}{\uline{"A comparative study of machine learning algorithms for fall detection in technology-based healthcare system: analyzing SVM, KNN, decision tree, random forest, LSTM, and CNN"}}}, (Afuan e Isnanto, 2025)
+\end{block}
+El objetivo está puesto en detectar caídas, pensando en el cuidado de los adultos mayores. \\
+La dificultad está en encontrar un algoritmo eficiente que diferencié entre caídas reales y actividades normales. 
+
+\end{frame}
+
+\begin{frame}{¿Cuándo gana LSTM? - Ejemplo.}
+Afuan e Isnanto trabajaron con el dataset de Kaggle Smartphone Human Fall Dataset, que incluye variables como aceleración máxima, velocidad angular, velocidad angular luego de la caída, aceleración lineal luego de la caída, entre otras.  \\
+Luego de ser preprocesado y entrenado, al momento de predecir observaron: \\
+\vspace{0.5em}
+\begin{center}
+\begin{tabular}{|l|c|c|c|c|}
+\hline
+     \textbf{Algoritmo} & \textbf{Accuracy} & \textbf{Recall} & \textbf{Precisión} & \textbf{F1-score}  \\ \hline
+     \textbf{KNN} & 87\% & 80\% & 85\% & 81\% \\
+     \textbf{LSTM} & 92\% & 92\% & 91\% & 92\%\\ \hline
+\end{tabular}
+\end{center}
+\end{frame}
+
+\begin{frame}{¿Cuándo gana LSTM? - Ejemplo. }
+\begin{block}{¿Por qué es mejor LSTM?}
+    Los datos provienen de sensores que registran movimientos de una persona, y las caídas pueden incluir cambios repentinos de aceleración y velocidad. Estas combinaciones pueden crear patrones complejos, más díficiles de reconocer para algoritmos como KNN. Pero favorece a los modelos de aprendizaje profundo como LSTM, que además, si recibiera las mediciones en orden temporal, podría aprender como evoluciona el movimiento antes, durante y después de la caída
+\end{block}
+KNN funciona mejor para clasificar observaciones que se distinguen por sus características. En este caso, una caída podría tener un valor parecido a una actividad normal en alguna variable, aunque el patrón sea distinto. 
+
+\end{frame}
+\begin{frame}{Bibliografía.}
+    \begin{itemize}
+        \item Afuan, L., \& Isnanto, R. R. (2025). \textit{A comparative study of machine learning algorithms for fall detection in technology-based healthcare system: analyzing SVM, KNN, decision tree, random forest, LSTM, and CNN}. E3S Web of Conferences (Vol. 605), 03051.
+        \item Ali, M. L., Thakur, K., Schmeelk, S., Debello, J., \& Dragos, D. (2025). \textit{Deep Learning vs. Machine Learning for Intrusion Detection in Computer Networks: A Comparative Study}. Applied Sciences, 1903.
+        \item Goodfellow, I., Bengio, Y., \& Courville, A. (2015). \textit{Deep Learning}. MIT Press.
+        \item Hastie, T., Tibshirani, R., \& Friedman, J. (2009). \textit{The Elements of Statistical Learning: Data Mining, Inference, and Prediction}. Springer.
+    \end{itemize}
+\end{frame}
+
+\end{document}
