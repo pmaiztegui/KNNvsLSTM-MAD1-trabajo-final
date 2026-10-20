@@ -1,4 +1,4 @@
-# Trabajo Final de Métodos para el Análisis de Datos I: KNN vs LSTM para detectar intrusiones en red.#
+# Trabajo Final de Métodos para el Análisis de Datos I: KNN vs LSTM para detectar intrusiones en red. #
 # _Descripción_ : #
 
 El objetivo del trabajo es comparar un modelo clásico de aprendizaje como lo es K-Nearest Neighbors con uno de aprendizaje profundo, como Long Short Term Memory.
