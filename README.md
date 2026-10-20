@@ -4,10 +4,10 @@
 El objetivo del trabajo es comparar un modelo clásico de aprendizaje como lo es K-Nearest Neighbors con uno de aprendizaje profundo, como Long Short Term Memory.
 Trabajaremos sobre el dataset provisto por el Canadian Institute of Cybersecurity, CICIDS-2017, que contiene información de tráfico en red normal y distintos tipos de ataques. 
 
-# _Motivación_:#
+# _Motivación_: #
 En un mundo donde cada vez dependemos más de la tecnología, la seguridad en red es fundamental. Es por esto, que nos resulta necesario desarrollar sistemas que sean capaces de detectar amenazas de manera precisa y eficiente. En este contexto, comparar distintos modelos de aprendizaje permite analizar cuál se adecúa mejor para detectar estas intrusiones. 
 
-# _Datos_:#
+# _Datos_: #
 Como mencionamos, utilizaremos el dataset CICIDS-2017 que contiene tráfico en red, generado en 5 días y contiene tráfico normal y distintos tipos de ciberataques.
 Originalmente, éste contenía 2.830.743 de registros de flujos de red. Cada registro se describe mediante 78 características numéricas y una clasificación (Label) que detecta al tráfico como benigno o indica qué ataque es. 
 Algunas de las variables numéricas que podemos observar son: Flow Duration, Flow Bytes/s, Flow Packets/s, Destination Port, Flow IAT.
