@@ -39,4 +39,13 @@ Comparamos los resultados obtenidos por los que se reportan en _Deep Learning vs
 Observamos diferencias, que se pueden deber a las decisiones que fuimos tomando a lo largo del trabajo. 
 
 # _Cómo ejecutar:_ #
-
+El repositorio se encuentra organizado de la siguiente forma:
+KNNvsLSTM-MAD1-trabajo-final/
+├── data/
+│   └── README.md
+├── notebooks/
+│   └── KNNvsLSTM.ipynb
+├── Reports/
+│   ├── KNN_vs_LSTM_beamer.pdf
+│   └── KNN_vs_LSTM_beamer.txt
+└──  README.md
