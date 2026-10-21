@@ -41,6 +41,18 @@ Observamos diferencias, que se pueden deber a las decisiones que fuimos tomando 
 # _Cómo ejecutar:_ #
 El repositorio se encuentra organizado de la siguiente forma:
 
+<WritingBlock id="61942" variant="standard">```text
+proyecto-cicids/
+├── data/
+│   └── README.md
+├── notebooks/
+│   └── comparacion_knn_lstm.ipynb
+├── presentacion/
+│   ├── presentacion.tex
+│   └── imagenes/
+├── README.md
+└── requirements.txt
+
 KNNvsLSTM-MAD1-trabajo-final/
 
 ├── data/
